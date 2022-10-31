@@ -1,4 +1,59 @@
 import os
+from sys import platform
+from src.fileIO import load_json
+from src.GUI import prompt_for_path
+
+
+def get_filepaths(root_path):
+    '''
+    Get target files depending on operating system. Windows mode uses tkinter to
+    allow user to interactively select any target files. Linux and Mac systems
+    uses info.json file to find a target directory and returns all files within
+    directory path.
+    Args:
+        root_path: <string> path to root folder
+    Returns:
+        GMRX_files: <array> list of target files to process as paths
+    '''
+    if platform == 'linux' or platform == 'linux2':
+        info_dictionary = load_json(
+            file_path=os.path.join(
+                root_path,
+                'info.json'))
+        directory_path = os.path.join(
+            root_path,
+            info_dictionary['Directory Path'])
+        GMRX_filelist = extractfile(
+            dir_path=directory_path,
+            file_string='.txt')
+        GMRX_files = [
+            os.path.join(
+                directory_path,
+                file)
+            for file in GMRX_filelist]
+    elif platform == 'darwin':
+        info_dictionary = load_json(
+            file_path=os.path.join(
+                root_path,
+                'info.json'))
+        directory_path = os.path.join(
+            root_path,
+            info_dictionary['Directory Path'])
+        GMRX_filelist = extractfile(
+            dir_path=directory_path,
+            file_string='.txt')
+        GMRX_files = [
+            os.path.join(
+                directory_path,
+                file)
+            for file in GMRX_filelist]
+    elif platform == 'win32':
+        GMRX_files = prompt_for_path(
+            default=root_path,
+            title='Select Target Files',
+            file_path=True,
+            file_type=[('TXT', '*.txt')])
+    return GMRX_files
 
 
 def check_directory_exists(dir_path):

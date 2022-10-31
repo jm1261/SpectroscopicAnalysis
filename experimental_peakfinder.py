@@ -1,5 +1,4 @@
 import os
-import src.GUI as gui
 import src.fileIO as io
 import src.filepaths as fp
 import src.userinput as ui
@@ -10,11 +9,7 @@ if __name__ == '__main__':
 
     ''' Organisation '''
     root = os.getcwd()
-    GMRX_files = gui.prompt_for_path(
-        default=root,
-        title='Select Target Files',
-        file_path=True,
-        file_type=[('TXT', '*.txt')])
+    GMRX_files = fp.get_filepaths(root_path=root)
     results_path = os.path.join(
         root,
         'Results')
@@ -39,12 +34,22 @@ if __name__ == '__main__':
             file_name=sample_parameters['File Name'])
 
         ''' Background Correction '''
-        background_file = fp.find_background(
-            background_path=background_path,
-            sample_name=sample_parameters['Sample Name'],
-            polarisation=sample_parameters['Polarisation'])
+        try:
+            background_file = fp.find_background(
+                background_path=background_path,
+                sample_name=sample_parameters['Sample Name'],
+                polarisation=sample_parameters['Polarisation'])
+        except:
+            background_file = []
 
-        if os.path.isfile(background_file):
+        if len(background_file) == 0:
+            normalised_intensity = anal.normalised_intensity(
+                intensity=anal.timecorrected_intensity(
+                    raw_intensity=raw_intensity,
+                    integration_time=sample_parameters['Integration Time']))
+            bg_parameters = {"BG String": "No BG File"}
+
+        else:
             _, bg_raw_intensity = io.read_GMRX_file(
                 file_path=background_file)
             bg_parameters = fp.background_parameters(
@@ -56,11 +61,6 @@ if __name__ == '__main__':
                 integration_time=sample_parameters['Integration Time'],
                 background_integration_time=(
                     bg_parameters['Bg Integration Time']))
-        else:
-            normalised_intensity = anal.normalised_intensity(
-                intensity=anal.timecorrected_intensity(
-                    raw_intensity=raw_intensity,
-                    integration_time=sample_parameters['Integration Time']))
 
         ''' Find Peak Wavelength '''
         peak_wavelength = anal.findpeak_wavelength(

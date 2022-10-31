@@ -44,3 +44,15 @@ def save_json_dicts(out_path,
             indent=2,
             default=convert)
         outfile.write('\n')
+
+
+def load_json(file_path):
+    '''
+    Extract user variables from json dictionary.
+    Args:
+        file_path: <string> path to file
+    Returns:
+        dictionary: <dict> use variables dictionary
+    '''
+    with open(file_path, 'r') as file:
+        return json.load(file)
