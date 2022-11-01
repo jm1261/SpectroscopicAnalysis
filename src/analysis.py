@@ -1,8 +1,7 @@
 import numpy as np
 import scipy.optimize as opt
-import matplotlib.pyplot as plt
-import scipy.integrate as integrate
 from src.plotting import fanofitplot
+from numpy.random import rand
 
 
 def timecorrected_intensity(raw_intensity,
@@ -139,17 +138,3 @@ def findpeak_wavelength(wavelength,
         "Fano Fit Parameters": ['Peak', 'Gamma', 'q', 'Ampltidude', 'Damping'],
         "Fano Fit": [value for value in popt],
         "Fano Errors": [value for value in errors]}
-
-
-def integrate_curve(x_data,
-                    y_data):
-    '''
-    Testing
-    '''
-    scipyarea = integrate.simpson(
-        y=y_data,
-        x=x_data)
-    numpyarea = np.trapz(
-        y=y_data,
-        x=x_data)
-    return numpyarea, scipyarea

@@ -129,7 +129,5 @@ dmypy.json
 .pyre/
 
 # Ignore Results
-*.config
 *.json
-*.txt
 *.png

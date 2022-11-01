@@ -14,12 +14,14 @@ def get_filepaths(root_path):
         root_path: <string> path to root folder
     Returns:
         GMRX_files: <array> list of target files to process as paths
+        background_path: <string> path to background files
+        results_path: <string> path to save results
     '''
+    info_dictionary = load_json(
+        file_path=os.path.join(
+            root_path,
+            'info.json'))
     if platform == 'linux' or platform == 'linux2':
-        info_dictionary = load_json(
-            file_path=os.path.join(
-                root_path,
-                'info.json'))
         directory_path = os.path.join(
             root_path,
             info_dictionary['Directory Path'])
@@ -32,10 +34,6 @@ def get_filepaths(root_path):
                 file)
             for file in GMRX_filelist]
     elif platform == 'darwin':
-        info_dictionary = load_json(
-            file_path=os.path.join(
-                root_path,
-                'info.json'))
         directory_path = os.path.join(
             root_path,
             info_dictionary['Directory Path'])
@@ -53,7 +51,13 @@ def get_filepaths(root_path):
             title='Select Target Files',
             file_path=True,
             file_type=[('TXT', '*.txt')])
-    return GMRX_files
+    background_path = os.path.join(
+        root_path,
+        info_dictionary['Background Path'])
+    results_path = os.path.join(
+        root_path,
+        info_dictionary['Results Path'])
+    return GMRX_files, background_path, results_path
 
 
 def check_directory_exists(dir_path):
@@ -99,7 +103,7 @@ def sample_parameters(file_name):
     return {
         "File Name": file_name,
         "Sample Name": file_split[0],
-        "Grating Period": (file_split[1])[1:],
+        "Grating Period": int(file_split[1])[1:],
         "Polarisation": file_split[2],
         "Integration Time": float((file_split[4])[3: ]) / 1000}
 

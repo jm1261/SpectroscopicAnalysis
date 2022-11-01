@@ -9,14 +9,7 @@ if __name__ == '__main__':
 
     ''' Organisation '''
     root = os.getcwd()
-    GMRX_files = fp.get_filepaths(root_path=root)
-    results_path = os.path.join(
-        root,
-        'Results')
-    background_path = os.path.join(
-        root,
-        'Data',
-        'Backgrounds')
+    GMRX_files, background_path, results_path = fp.get_filepaths(root_path=root)
 
     ''' Loop Files '''
     for file in GMRX_files:
