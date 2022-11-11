@@ -42,7 +42,8 @@ def toggle_selector(event):
 
 
 def region_interest(x, y,
-                    file_name):
+                    file_name,
+                    y_limit=False):
     '''
     Allows uer to select an area of a graph of interest. Plots an x-y graph and
     uses matplotlib rectangle selector to select region of interest. The x, y
@@ -51,6 +52,7 @@ def region_interest(x, y,
         x: <array> x-axis data array
         y: <array> y-axis data array
         file_name: <string> file identifier for data label
+        y_limit: <tuple/bool> if set, (ymin, ymax), else False
     Returns:
         x1: <float> x coordinate for the start position of region of interest
         y1: <float> y coordinate for the start position of region of interest
@@ -86,6 +88,8 @@ def region_interest(x, y,
         fontweight='bold',
         color='black')
     ax.set_xlim(min(x), max(x))
+    if y_limit:
+        ax.set_ylim(y_limit)
     print('\n   click  -->  release')
     toggle_selector.RS = RectangleSelector(
         ax,
@@ -106,24 +110,29 @@ def region_interest(x, y,
 
 def trimindices(x_array,
                 y_array,
-                file_name):
+                file_name,
+                region,
+                y_limit=False):
     '''
     Trim arrays to region of interest, return the array min/max indices.
     Args:
         x_array: <array> x-axis data
         y_array: <array> y-axis data
-        file_name: <string> file indentifier for data label
+        file_name: <string> file name identifier string
+        region: <string> region identifier for dictionary keys
+        y_limit: <tuple/bool> if set, (ymin, ymax), else False
     Returns:
         index: <dict> dictionary containing:
-            min_index: <int> minimum index in full array for region of interest
-            max_index: <int> maximum index in full array for region of interest
+            Region Trim Index: <array> min, max indices
+            Region Trimmed X: <array> trimmed x array
+            Region Trimmed Y: <array> trimmed y array
     '''
     x1, _, x2, _ = region_interest(
         x=x_array,
         y=y_array,
-        file_name=file_name)
+        file_name=file_name,
+        y_limit=y_limit)
     min_index = np.argmin(np.abs(x_array - x1))
     max_index = np.argmin(np.abs(x_array - x2))
     return {
-        "Min Trim Index": min_index,
-        "Max Trim Index": max_index}
+        f'{region} Trim Index': [min_index, max_index]}
