@@ -104,7 +104,6 @@ def get_fano_parameters(wavelength,
             intensity,
             initial_guesses)
         errors = np.sqrt(np.diag(pcov))
-        
     except RuntimeError:
         print('\nRun Time Error \nNo Peak Found')
         popt = [0, 0, 0, 0, 0]
