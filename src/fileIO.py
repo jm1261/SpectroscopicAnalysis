@@ -2,7 +2,19 @@ import json
 import numpy as np
 
 
-def read_GMRX_file(file_path):
+def load_json(file_path):
+    '''
+    Extract user variables from json dictionary.
+    Args:
+        file_path: <string> path to file
+    Returns:
+        dictionary: <dict> use variables dictionary
+    '''
+    with open(file_path, 'r') as file:
+        return json.load(file)
+
+
+def read_GMR_file(file_path):
     '''
     Load txt output from GMRX spectrometer. Return wavelength in nm.
     Args:
@@ -11,10 +23,16 @@ def read_GMRX_file(file_path):
         wavelength: <array> wavelength array
         intensity: <array> intensity array
     '''
-    wavelength, intensity = np.genfromtxt(
-        fname=file_path,
-        delimiter=';',
-        unpack=True)
+    try:
+        wavelength, intensity = np.genfromtxt(
+            fname=file_path,
+            delimiter=';',
+            unpack=True)
+    except:
+        wavelength, intensity = np.genfromtxt(
+            fname=file_path,
+            delimiter=',',
+            unpack=True)
     return wavelength, intensity
 
 
@@ -44,15 +62,3 @@ def save_json_dicts(out_path,
             indent=2,
             default=convert)
         outfile.write('\n')
-
-
-def load_json(file_path):
-    '''
-    Extract user variables from json dictionary.
-    Args:
-        file_path: <string> path to file
-    Returns:
-        dictionary: <dict> use variables dictionary
-    '''
-    with open(file_path, 'r') as file:
-        return json.load(file)
