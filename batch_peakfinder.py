@@ -49,7 +49,7 @@ def batch_calculate_peak_wavelength(parent_directory,
                 raw_intensity=anal.timecorrected_intensity(
                     raw_intensity=raw_intensity,
                     integration_time=sample_parameters[
-                        f'{parent} Integration Time']))
+                        f'{parent_directory} Integration Time']))
         else:
             _, background_raw_intensity = io.read_GMR_file(
                 file_path=background_file[0])
@@ -58,11 +58,10 @@ def batch_calculate_peak_wavelength(parent_directory,
                 intensity=raw_intensity,
                 background_intensity=background_raw_intensity,
                 integration_time=sample_parameters[
-                    f'{parent} Integration Time'],
+                    f'{parent_directory} Integration Time'],
                 background_integration_time=background_parameters[
                     f'{background_parent} Integration Time'])
-        ''' Analysis '''
-        out_string = sample_parameters[f'{parent} Secondary String']
+        out_string = sample_parameters[f'{parent_directory} Secondary String']
         peak_results = anal.calc_peakwavelength(
             wavelength=wavelength,
             normalised_intensity=normalised_intensity,
@@ -83,8 +82,7 @@ if __name__ == '__main__':
 
     ''' Organisation '''
     root = Path().absolute()
-    info, directory_paths = fp.get_directory_paths(
-        root_path=root)
+    info, directory_paths = fp.get_directory_paths(root_path=root)
     file_paths = fp.get_files_paths(
         directory_path=directory_paths['Spectrum Path'],
         file_string='.txt')
