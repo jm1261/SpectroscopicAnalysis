@@ -1,8 +1,8 @@
 import os
 import numpy as np
 
-from sys import platform
 from pathlib import Path
+from sys import platform
 from src.fileIO import load_json
 from src.GUI import prompt_for_path
 
@@ -48,7 +48,7 @@ def extractfile(directory_path,
     '''
     Pull file from directory path.
     Args:
-        dir_path: <string> path to file
+        directory_path: <string> path to file
         file_string: <string> string contained within file name
     Returns:
         array: <array> array of selected files
@@ -142,11 +142,15 @@ def get_polarisation(file_name):
     file_split = file_name.split('_')
     TE_string = [string for string in file_split if 'TE' in string]
     TM_string = [string for string in file_split if 'TM' in string]
-    polarisation = np.append(TE_string, TM_string)
-    return polarisation[0]
+    polarisations = np.append(TE_string, TM_string)
+    if len(polarisations) == 0:
+        polarisation = 0
+    else:
+        polarisation = polarisations[0]
+    return polarisation
 
 
-def sample_information(file_path):
+def spectrum_sample_information(file_path):
     '''
     Pull sample parameters from file name string for various processes.
     Args:
@@ -167,6 +171,23 @@ def sample_information(file_path):
         f'{parent_directory} Secondary String': f'{file_split[1]}_{polarise}',
         f'{parent_directory} Integration Time': integration,
         f'{parent_directory} Polarisation': polarise}
+
+
+def sample_information(file_path):
+    '''
+    Pull sample parameters based on which type of file is being analysed.
+    Args:
+        file_path: <string> path to file
+    Returns:
+        sample_parameters: <dict>
+    '''
+    parent_directory = get_parent_directory(file_path=file_path)
+    if parent_directory == 'Spectrum' or parent_directory == 'Background':
+        sample_parameters = spectrum_sample_information(
+            file_path=file_path)
+    else:
+        sample_parameters = {}
+    return sample_parameters
 
 
 def get_all_batches(file_paths):
