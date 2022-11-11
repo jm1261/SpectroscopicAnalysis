@@ -129,5 +129,6 @@ dmypy.json
 .pyre/
 
 # Ignore Results
-*.json
-*.png
+Results/
+Background/
+Data/
