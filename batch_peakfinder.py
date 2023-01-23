@@ -1,4 +1,5 @@
 import src.fileIO as io
+import src.chris as chris
 import src.filepaths as fp
 import src.analysis as anal
 
@@ -62,7 +63,7 @@ def batch_calculate_peak_wavelength(parent_directory,
                 background_integration_time=background_parameters[
                     f'{background_parent} Integration Time'])
         out_string = sample_parameters[f'{parent_directory} Secondary String']
-        peak_results = anal.calc_peakwavelength(
+        peak_results = chris.calc_peakwavelength(
             wavelength=wavelength,
             normalised_intensity=normalised_intensity,
             sample_details=sample_parameters,
@@ -92,7 +93,7 @@ if __name__ == '__main__':
     for batch, filepaths in batches.items():
         out_file = Path(
             f'{directory_paths["Results Path"]}'
-            f'/{batch}_PeakWavelength.json')
+            f'/{batch}_Peak.json')
         if out_file.is_file():
             pass
         else:
