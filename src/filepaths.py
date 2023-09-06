@@ -204,6 +204,7 @@ def get_all_batches(file_paths):
     batches = {}
     for file in file_paths:
         sample_parameters = sample_information(file_path=file)
+        print(sample_parameters)
         parent = sample_parameters['Parent Directory']
         key = f'{parent} Primary String'
         if sample_parameters[key] in batches.keys():
