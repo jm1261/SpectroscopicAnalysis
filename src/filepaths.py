@@ -204,6 +204,7 @@ def get_all_batches(file_paths):
     batches = {}
     for file in file_paths:
         sample_parameters = sample_information(file_path=file)
+        print(sample_parameters)
         parent = sample_parameters['Parent Directory']
         key = f'{parent} Primary String'
         if sample_parameters[key] in batches.keys():
@@ -234,15 +235,17 @@ def find_background(background_path,
             directory_path=background_path,
             file_string=file_string)
         background_file = []
+        bg_details = {}
         for file in background_files:
             file_path = Path(f'{background_path}/{file}')
-            bg_details = sample_information(file_path=file_path)
-            bg_parent = bg_details['Parent Directory']
+            bg_info = sample_information(file_path=file_path)
+            bg_parent = bg_info['Parent Directory']
             bg_primary = f'{bg_parent} Primary String'
             bg_polarise = f'{bg_parent} Polarisation'
-            if bg_details[bg_primary] == sample_details[primary]:
-                if bg_details[bg_polarise] == sample_details[polarise]:
+            if bg_info[bg_primary] == sample_details[primary]:
+                if bg_info[bg_polarise] == sample_details[polarise]:
                     background_file.append(file_path)
+                    bg_details.update(bg_info)
     except:
         background_file = []
         bg_details = {"BG String": "No BG File"}

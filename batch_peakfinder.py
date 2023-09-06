@@ -1,6 +1,8 @@
 import src.fileIO as io
+import src.chris as chris
 import src.filepaths as fp
 import src.analysis as anal
+import src.plotting as plot
 
 from pathlib import Path
 
@@ -44,6 +46,7 @@ def batch_calculate_peak_wavelength(parent_directory,
             background_path=directory_paths['Background Path'],
             sample_details=sample_parameters,
             file_string='.txt')
+        print(background_file)
         if len(background_file) == 0:
             normalised_intensity = anal.normalise_intensity(
                 raw_intensity=anal.timecorrected_intensity(
@@ -62,7 +65,11 @@ def batch_calculate_peak_wavelength(parent_directory,
                 background_integration_time=background_parameters[
                     f'{background_parent} Integration Time'])
         out_string = sample_parameters[f'{parent_directory} Secondary String']
-        peak_results = anal.calc_peakwavelength(
+        plot.spectrumplt(
+            wavelength=wavelength,
+            intensity=normalised_intensity,
+            out_path=Path(f'{directory_paths["Results Path"]}/{batch_name}_{out_string}'))
+        peak_results = chris.calc_peakwavelength(
             wavelength=wavelength,
             normalised_intensity=normalised_intensity,
             sample_details=sample_parameters,
@@ -92,7 +99,7 @@ if __name__ == '__main__':
     for batch, filepaths in batches.items():
         out_file = Path(
             f'{directory_paths["Results Path"]}'
-            f'/{batch}_PeakWavelength.json')
+            f'/{batch}_Peak.json')
         if out_file.is_file():
             pass
         else:

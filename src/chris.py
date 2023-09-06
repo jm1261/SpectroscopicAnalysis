@@ -55,23 +55,13 @@ def bg_normal_intensity(intensity,
     return normal_intensity
 
 
-def fano_resonance(x, x0, gamma, q, amplitude, damping):
+def fano_resonance(x, amp, assym, res, gamma, off):
     '''
-    Fano resonance peak equation.
-    Args:
-        x: <array> x-axis point, wavelength in nm
-        x0: <float> peak x point, wavelength in nm
-        gamma: <float> reduced frequency
-        q: <float> shape factor
-        amplitude: <float> peak amplitude
-        damping: <float> damping factor
-    Returns:
-        y: <array> data array for fano peak
+    Chris' fano resonance equation
     '''
-    omega = 2 * ((x - x0) / gamma)
-    numerator = ((q + omega) ** 2) + damping
-    denominator = 1 + (omega ** 2)
-    y = amplitude * (numerator / denominator)
+    numerator = ((assym * gamma) + (x - res)) * ((assym * gamma) + (x - res))
+    denominator = (gamma * gamma) + ((x - res) * (x - res))
+    y = (amp * (numerator / denominator)) + off
     return y
 
 
@@ -81,35 +71,26 @@ def get_fano_parameters(wavelength,
                         plot_figure,
                         out_path=False):
     '''
-    Use scipy optimise and fano_resonance to iterate and find the peak in
-    intensity and the corresponding wavelength and error value.
-    Args:
-        wavelength: <array> wavelength array in nm
-        intensity: <array> intensity array
-        sample_name: <string> secondary sample identifier string
-        plot_figure: <string> if "True" will plot normalised spectrum with fano
-        out_path: <string> path to save, False by default
-    Returns:
-        peak_wavelength: <dict> dictionary containing:
-            popt: <array> fano fit parameters:
-                peak, gamma, q, amplitude, damping
-            pcov: <array> fano fit errors
-                peak, gamma, q, amplitude, damping
+    Chris' fano parameters
     '''
-    initial_guesses = [wavelength[np.argmax(intensity)], 10, 5, 0.6, 1]
+    initial_peak = wavelength[np.argmax(intensity)]
+    initial_guesses = [1, 1, initial_peak, 10, 1]
+    bounds = (
+        (initial_peak - 25, -10, -2 * np.pi),
+        (initial_peak + 25, 10, 2 * np.pi))
     try:
         popt, pcov = opt.curve_fit(
-            fano_resonance,
-            wavelength,
-            intensity,
-            initial_guesses)
+            f=fano_resonance,
+            xdata=wavelength,
+            ydata=intensity,
+            p0=initial_guesses)
         errors = np.sqrt(np.diag(pcov))
     except RuntimeError:
         print('\nRun Time Error \nNo Peak Found')
         popt = [0, 0, 0, 0, 0]
         errors = [0, 0, 0, 0, 0]
-    peak_wavelength = popt[0]
-    peak_wavelength_error = errors[0]
+    peak_wavelength = popt[2]
+    peak_wavelength_error = errors[2]
     if plot_figure == 'True':
         fanofitplot(
             wavelength=wavelength,
@@ -117,18 +98,18 @@ def get_fano_parameters(wavelength,
             fano=[
                 fano_resonance(
                     x=wav,
-                    x0=popt[0],
-                    gamma=popt[1],
-                    q=popt[2],
-                    amplitude=popt[3],
-                    damping=popt[4])
+                    amp=popt[0],
+                    assym=popt[1],
+                    res=popt[2],
+                    gamma=popt[3],
+                    off=popt[4])
                 for wav in wavelength],
             peak_wavelength=peak_wavelength,
             peak_error=peak_wavelength_error,
             out_path=out_path)
     return {
         f'{sample_name} Fano Fit Parameters': [
-            'Peak', 'Gamma', 'q', 'Ampltidude', 'Damping'],
+            'amp', 'assym', 'res', 'gamma', 'off'],
         f'{sample_name} Fano Fit': [value for value in popt],
         f'{sample_name} Fano Errors': [value for value in errors],
         f'{sample_name} Wavelength': [w for w in wavelength],
@@ -148,8 +129,8 @@ def get_peak_wavelength(fano_parameters,
             Peak Wavelength (nm)
             Peak Error (nm)
     '''
-    peak_wavelength = (fano_parameters[f'{sample_name} Fano Fit'])[0]
-    peak_error = (fano_parameters[f'{sample_name} Fano Errors'])[1]
+    peak_wavelength = (fano_parameters[f'{sample_name} Fano Fit'])[2]
+    peak_error = (fano_parameters[f'{sample_name} Fano Errors'])[2]
     return {
         f'{sample_name} Peak Wavelength': peak_wavelength,
         f'{sample_name} Peak Error': peak_error}

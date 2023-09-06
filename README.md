@@ -43,7 +43,7 @@ Language and package requirements can also be found in requirements.txt. The cod
 
 ## Launch
 
-The code can be run from any terminal or editor. Main scripts are in the repository's main directory, while source code is stored safely in /src. The code relies on hte use of info.json file for non-windows operating systems, this should be kept in the main repository directory.
+The code can be run from any terminal or editor. Main scripts are in the repository's main directory, while source code is stored safely in /src. The code relies on the use of info.json file for non-windows operating systems, this should be kept in the main repository directory.
 
 ## Setup
 
@@ -71,7 +71,7 @@ The code is able to distinguish between spectrum and background files using the 
 
 ### Spectrum File Names
 
-Handling data and information is always a challenging aspect of coding. It's far easier to convey specific file information within the file name itself than to have a bank of dictionaries, text files, or other storage format files somewhere with all the relevant information required for data processing. This software is no different, and as such, there are specific pieces of information that are required from the file name that need to be included, these are:
+Handling data and information is always a challenging aspect of coding. It's far easier to convey specific file information within the file name itself than to have a bank of dictionaries, text files, or other storage format files somewhere with all the relevant information required for data processing. This software is no different, and as such, there are specific pieces of information that are required from the file names that need to be included, these are:
 
 * Primary sample identifier string:
   * This may be a string like "A1", "Sample1", or "CharacterisationSample17". Either way, there must be some form of sample identifier within the file name.
@@ -101,7 +101,7 @@ The default output from Thorlabs spectrometers, the standard for most research g
 
 ### Default Info
 
-As discussed in this section, all the user interface is done through the info.json file included in the main directory of the repository. This file can be opened using any text editor, and can be adjusted by the user with little-to-no consequence. The default info.json looks lik this:
+As discussed in this section, all the user interface is done through the info.json file included in the main directory of the repository. This file can be opened using any text editor, and can be adjusted by the user with little-to-no consequence. The default info.json looks like this:
 
 ![info.json](./src/Images/info_dictionary.jpg)
 
@@ -125,7 +125,7 @@ Parent directory is discussed above in directory paths. The code relies on relev
 
 ### Batch Processing
 
-For batch processing, indicated by the batch_ in either the script name or function name, the code then looks for like-filme names, typically with the same primary identifier string, and groups them together separated by secondary identifier string.
+For batch processing, indicated by the batch_ in either the script name or function name, the code then looks for like-file names, typically with the same primary identifier string, and groups them together separated by secondary identifier string.
 
 Batches are found using find_all_batches function, which matches primary identifier strings, groups the file names, file paths, and secondary string names together and returns a batch dictionary.
 
