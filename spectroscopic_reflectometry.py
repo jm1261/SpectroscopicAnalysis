@@ -64,8 +64,7 @@ def spectroscopic_reflectometer(file_path,
             y1=n,
             y2=k,
             x_axis_label='Wavelength [nm]',
-            y1_axis_label='n [au]',
-            y2_axis_label='k [au]',
+            y_axis_label='Index [au]',
             y1_label='n',
             y2_label='k',
             title=file_name,
@@ -81,10 +80,9 @@ def spectroscopic_reflectometer(file_path,
             y1=eps_r,
             y2=eps_i,
             x_axis_label='Wavelength [nm]',
-            y1_axis_label='eps_r [au]',
-            y2_axis_label='eps_i [au]',
-            y1_label='eps_r',
-            y2_label='eps_i',
+            y_axis_label='Permittivity [au]',
+            y1_label=r'$\bf{\epsilon_{r}}$',
+            y2_label=r'$\bf{\epsilon_{i}}$',
             title=file_name,
             out_path=eps_out_path,
             plot_dict=plot_dict)
@@ -102,13 +100,12 @@ if __name__ == '__main__':
             f'{root}/../SpectroscopicAnalysis/filmetrics_dictionary.json'))
     files = filmetrics_dict["data_files"]
     data_path = filmetrics_dict["data_path"]
-    results_path = filmetrics_dict["results_path"]
     graph_paths = {"out_paths" : []}
     for file in files:
         file_path = Path(f'{data_path}/{file}')
         nk_out, eps_out = spectroscopic_reflectometer(
             file_path=file_path,
-            out_path=results_path,
+            out_path=data_path,
             plot_dict=filmetrics_dict)
         graph_paths["out_paths"].append(f'{nk_out}')
         graph_paths["out_paths"].append(f'{eps_out}')

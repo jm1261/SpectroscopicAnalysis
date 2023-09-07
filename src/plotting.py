@@ -46,8 +46,7 @@ def reflectometer_plots(x : list,
                         y1_label : str,
                         y2_label : str,
                         x_axis_label : str,
-                        y1_axis_label : str,
-                        y2_axis_label : str,
+                        y_axis_label : str,
                         title : str,
                         out_path : str,
                         plot_dict : dict) -> None:
@@ -63,8 +62,8 @@ def reflectometer_plots(x : list,
         x data, y data for axis 1, y data for axis 2, respectively, as a list.
     x_axis_label, y1_axis_label, y2_axis_label, y1_label, y2_label, title,
     out_path: string
-        x axis label, y axis labels for y1 and y2 data, y1 and y2 legend label,
-        graph title, path to save.
+        x axis label, y axis labels, y1 and y2 legend label, graph title, path
+        to save.
     plot_dict: dictionary
         Plot settings dictionary, containing:
             {
@@ -98,35 +97,34 @@ def reflectometer_plots(x : list,
     None
 
     """
-    fig, ax1 = plt.subplots(
+    fig, ax = plt.subplots(
         nrows=1,
         ncols=1,
         figsize=[
             cm_to_inches(cm=plot_dict["width"]),
             cm_to_inches(cm=plot_dict["height"])],
         dpi=plot_dict["dpi"])
-    ax2 = ax1.twinx()
     if plot_dict["line"] == "True":
-        line1 = ax1.plot(
+        line1 = ax.plot(
             x,
             y1,
             'blue',
             lw=2,
             label=y1_label)
-        line2 = ax2.plot(
+        line2 = ax.plot(
             x,
             y2,
             'red',
             lw=2,
             label=y2_label)
     else:
-        line1 = ax1.plot(
+        line1 = ax.plot(
             x,
             y1,
             'blue',
             markersize=4,
             label=y1_label)
-        line2 = ax2.plot(
+        line2 = ax.plot(
             x,
             y2,
             'red',
@@ -134,40 +132,38 @@ def reflectometer_plots(x : list,
             label=y2_label)
     lines = line1 + line2
     labels = [line.get_label() for line in lines]
-    ax1.legend(
+    if plot_dict["grid"] == "True":
+        grid = True
+    else:
+        grid = False
+    ax.grid(
+        visible=grid,
+        alpha=0.5)
+    ax.legend(
         lines,
         labels,
         frameon=True,
         loc=plot_dict["legend_loc"],
         ncol=plot_dict["legend_col"],
         prop={"size": plot_dict["legend_size"]})
-    ax1.set_xlabel(
+    ax.set_xlabel(
         x_axis_label,
         fontsize=plot_dict["axis_fontsize"],
         fontweight='bold')
-    ax1.set_ylabel(
-        y1_axis_label,
+    ax.set_ylabel(
+        y_axis_label,
         fontsize=plot_dict["axis_fontsize"],
         fontweight='bold')
-    ax2.set_ylabel(
-        y2_axis_label,
-        fontsize=plot_dict["axis_fontsize"],
-        fontweight='bold')
-    ax1.set_title(
+    ax.set_title(
         title,
         fontsize=plot_dict["title_fontsize"],
         fontweight='bold')
-    ax1.tick_params(
+    ax.tick_params(
         axis='both',
         which='major',
         labelsize=plot_dict["label_size"])
-    ax2.tick_params(
-        axis='y',
-        which='major',
-        labelsize=plot_dict["label_size"])
-    ax1.xaxis.set_minor_locator(AutoMinorLocator())
-    ax1.yaxis.set_minor_locator(AutoMinorLocator())
-    ax2.yaxis.set_minor_locator(AutoMinorLocator())
+    ax.xaxis.set_minor_locator(AutoMinorLocator())
+    ax.yaxis.set_minor_locator(AutoMinorLocator())
     plt.savefig(
         out_path,
         bbox_inches='tight')

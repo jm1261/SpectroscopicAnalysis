@@ -10,25 +10,22 @@
   "axis_fontsize": 15,
   "title_fontsize": 15,
   "label_size": 10,
-  "data_files": [
-    "Test2_ALD-1.fitnk",
-    "Test2_ALD-2.fitnk",
-    "Test2_ALD-3.fitnk",
-    "Test2_ALD-4.fitnk",
-    "Test2_ALD-5.fitnk"
-  ],
+  "batch_name": "Test3_ALD",
   "data_path": "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics",
-  "results_path": "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics",
+  "data_files": [
+    "Test3_ALD_1.fitnk",
+    "Test3_ALD_2.fitnk",
+    "Test3_ALD_3.fitnk",
+    "Test3_ALD_4.fitnk"
+  ],
   "out_paths": [
-    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test2_ALD-1_nk.png",
-    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test2_ALD-1_epsilon.png",
-    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test2_ALD-2_nk.png",
-    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test2_ALD-2_epsilon.png",
-    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test2_ALD-3_nk.png",
-    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test2_ALD-3_epsilon.png",
-    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test2_ALD-4_nk.png",
-    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test2_ALD-4_epsilon.png",
-    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test2_ALD-5_nk.png",
-    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test2_ALD-5_epsilon.png"
+    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test3_ALD_1_nk.png",
+    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test3_ALD_1_epsilon.png",
+    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test3_ALD_2_nk.png",
+    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test3_ALD_2_epsilon.png",
+    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test3_ALD_3_nk.png",
+    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test3_ALD_3_epsilon.png",
+    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test3_ALD_4_nk.png",
+    "\\\\storage.its.york.ac.uk\\physics\\krauss\\Josh\\Post_Doc\\Filmetrics\\Test3_ALD_4_epsilon.png"
   ]
 }
