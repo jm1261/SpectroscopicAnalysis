@@ -129,7 +129,4 @@ dmypy.json
 .pyre/
 
 # Ignore Results
-Results/
-Background/
-Data/
-Spectrum/
+*.json
