@@ -2,7 +2,7 @@ import json
 import numpy as np
 
 
-def load_json(file_path):
+def load_json(file_path : str) -> dict:
     """
     Loads .json file types.
 
@@ -94,8 +94,8 @@ def convert(o):
     raise TypeError
 
 
-def save_json_dicts(out_path,
-                    dictionary):
+def save_json_dicts(out_path : str,
+                    dictionary : dict) -> None:
     """
     Save .json file types.
 
@@ -176,3 +176,43 @@ def reflectometer_in(file_path : str) -> list:
         skip_footer=6,
         unpack=True)
     return col0, col1, col2
+
+
+def ellipsometer_in(file_path : str) -> list:
+    """
+    Load text file output from the J.A. Woollam VASE.
+
+    Loads a 5 column, comma delimited, .csv file output from a J.A. Woollam
+    variable angle spectroscopic ellipsometer.
+
+    Parameters
+    ----------
+    file_path: string
+        Path to file.
+
+    Returns
+    -------
+    col0, col1, col2, col3, col4: list
+        Typically wavelength (nm), sample psi, sample delta, model psi, model
+        delta.
+    
+    See Also
+    --------
+    numpy genfromtxt
+
+    Notes
+    -----
+    None
+
+    Example
+    -------
+    None
+
+    """
+    col0, col1, col2, col3, col4 = np.genfromtxt(
+        fname=file_path,
+        delimiter=',',
+        skip_header=2,
+        usecols=(0, 1, 2, 3, 4),
+        unpack=True)
+    return col0, col1, col2, col3, col4

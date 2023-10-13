@@ -206,3 +206,40 @@ def calc_peakwavelength(wavelength,
         **fano_parameters,
         **peak_wavelength)
     return results_dictionary
+
+
+def cauchy_equation(A : float,
+                    B : float,
+                    C : float,
+                    x : float) -> float:
+    """
+    Calculate the cauchy model refractive index at a given wavelength.
+
+    Use the cauchy model and coefficients to calculate the refractive index at
+    a given wavelength in micrometers.
+
+    Parameters
+    ----------
+    A, B, C, x: float
+        A, B, and C cauchy coefficients, and wavelength in micrometers.
+    
+    Returns
+    -------
+    n: float
+        Refractive index.
+    
+    See Also
+    --------
+    None
+
+    Notes
+    -----
+    None
+
+    Example
+    -------
+    None
+    
+    """
+    n = A + (B / (x ** 2)) + (C / (x ** 4))
+    return n

@@ -4,9 +4,10 @@ import src.plotting as plot
 
 from pathlib import Path
 
-def spectroscopic_reflectometer(file_path,
-                                out_path,
-                                plot_dict):
+
+def spectroscopic_reflectometer(file_path : str,
+                                out_path : str,
+                                plot_dict : dict) -> str:
     """
     Plot the n, k and epsilon real, imaginary for Filmetrics spectroscopic
     reflectometer.
@@ -100,7 +101,7 @@ if __name__ == '__main__':
             f'{root}/../SpectroscopicAnalysis/filmetrics_dictionary.json'))
     files = filmetrics_dict["data_files"]
     data_path = filmetrics_dict["data_path"]
-    graph_paths = {"out_paths" : []}
+    graph_paths = {"out_paths": []}
     for file in files:
         file_path = Path(f'{data_path}/{file}')
         nk_out, eps_out = spectroscopic_reflectometer(
