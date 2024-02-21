@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.optimize as opt
+import scipy.constants as const
 
 from src.plotting import fanofitplot
 from src.userinput import trimindices
@@ -208,38 +209,308 @@ def calc_peakwavelength(wavelength,
     return results_dictionary
 
 
-def cauchy_equation(A : float,
-                    B : float,
-                    C : float,
-                    x : float) -> float:
+def cauchy_fits(wavelength : list,
+                model : dict) -> list:
     """
-    Calculate the cauchy model refractive index at a given wavelength.
-
-    Use the cauchy model and coefficients to calculate the refractive index at
-    a given wavelength in micrometers.
+    Calculate the Cauchy model refractive index and extinction coefficient.
 
     Parameters
     ----------
-    A, B, C, x: float
-        A, B, and C cauchy coefficients, and wavelength in micrometers.
-    
+    wavelength: list
+        List of wavelengths at which to analyse the refractive index and
+        extinction coefficient.
+    model: dictionary
+        Fit model containing the A, B, and C components of the cauchy model.
+
     Returns
     -------
-    n: float
-        Refractive index.
-    
+    n, k: list
+        Refractive index and extinction coefficient values over the specified
+        wavelength range.
+
     See Also
     --------
     None
 
     Notes
     -----
-    None
+    The Cauchy model is used to describe the wavelength dependent refractive
+    index of a material using at least three parameters (A, B, and C). It
+    can be extended to an imaginary component, but this is an approximation.
 
     Example
     -------
     None
-    
+
     """
-    n = A + (B / (x ** 2)) + (C / (x ** 4))
-    return n
+    wavelength_um = [x / 1E3 for x in wavelength]
+    n = [
+        (model["A"])[0] +
+        ((model["B"])[0] / (x ** 2)) +
+        ((model["C"])[0] / (x ** 4))
+        for x in wavelength_um]
+    k = [
+        a * np.tan(np.arctan2(np.imag(a), np.real(a)))
+        for a in n]
+    return n, k
+
+
+def epsilon(refractive_index : list,
+            extinction_coefficient : list) -> list:
+    """
+    Calculate the real and imaginary components of the permittivity from n, k.
+
+    Parameters
+    ----------
+    refractive_index, extinction_coefficient: list
+        n and k values at which to calculate the permittivity.
+
+    Returns
+    -------
+    eps_real, eps_imag: list
+        Real and imaginary components of the permittivity.
+
+    See Also
+    --------
+    cauchy_fits
+
+    Notes
+    -----
+    This is a simplistic calculation for epsilon based on the complex refractive
+    index equation.
+
+    Example
+    -------
+    None
+
+    """
+    eps_real = [
+        (a ** 2) - (b ** 2)
+        for a, b
+        in zip(refractive_index, extinction_coefficient)]
+    eps_imag = [
+        2 * a * b
+        for a, b
+        in zip(refractive_index, extinction_coefficient)]
+    return eps_real, eps_imag
+
+
+def cody_lorentz_oscillator(amplitude : float,
+                            oscillator_energy : float,
+                            broadening : float,
+                            omega : float) -> complex:
+    """
+    Calculate the permittivity at a specified angular frequency for a
+    Cody-Lorentz oscillator.
+
+    Parameters
+    ----------
+    amplitude, oscillator_energy, broadening, omega: float
+        Cody-Lorentz oscillator amplitude, energy, broadening parameter, and the
+        angular frequency at which to evaluate the model.
+
+    Returns
+    -------
+    epsilon: complex
+        Complex permittivity at specified angular frequency.
+
+    See Also
+    --------
+    None
+
+    Notes
+    -----
+    The Cody-Lorentz model is a modification of the Lorentz oscillator model
+    that incorporates an additional term to account for the dispersion of the
+    refractive index. This model does not include a Drude component or the high
+    frequency permittivity.
+
+    Example
+    -------
+    None
+
+    """
+    epsilon = (
+        (amplitude * oscillator_energy) /
+        (complex(
+            (oscillator_energy ** 2) - (omega ** 2), -(omega * broadening))))
+    return epsilon
+
+
+def drudeoscillator(scattering_time : float,
+                    plasma_frequency : float,
+                    omega: float) -> complex:
+    """
+    Calculate the permittivity at a specified angular frequency for a Drude
+    oscillator.
+
+    Parameters
+    ----------
+    scattering_time, plasma_frequency, omega: float
+        The scattering time, plasma frequency, and angular frequency at which
+        to evaluate the permittivity. Note that plasma frequency is not squared
+        as the input argument.
+
+    Returns
+    -------
+    epsilon: complex
+        Complex permittivity at specified angular frequency.
+
+    See Also
+    --------
+    None
+
+    Notes
+    -----
+    The Drude model is a classical model that describes the behaviour of free
+    electrons in a metal when subjected to an external electromagnetic field,
+    assuming that electrons in the material behave like a classical gas,
+    experiencing collisions with the lattice ions.
+
+    Example
+    -------
+    None
+
+    """
+    if scattering_time == 0:
+        gamma = 0
+    else:
+        gamma = 1 / scattering_time
+    epsilon = (plasma_frequency ** 2) / (omega * complex(omega, gamma))
+    return epsilon
+
+
+def graded_material(wavelength : list,
+                    model : dict) -> list:
+    """
+    Calculate the real and imaginary components of the complex permittivity as
+    given by the cody lorentz model.
+
+    Parameters
+    ----------
+    wavelength: list
+        Wavelength range at which to analyse the complex permittivity.
+    model: dictionary
+        Fit model containing the cody lorentz model components.
+
+    Returns
+    -------
+    eps_real, eps_imag: list
+        Real and imaginary components of the permittivity.
+
+    See Also
+    --------
+    None
+
+    Notes
+    -----
+    The Cody-Lorentz model is used to describe the complex permittivity of a
+    material that exhibits Lorentz oscillator and Drude oscillator behaviour.
+
+    Example
+    -------
+    None
+
+    """
+    frequency = [3E8 / (w * 1E-9) for w in wavelength]
+    omega = [2 * np.pi * f for f in frequency]
+    cody_components = model['e1 Components']
+    lorentz_components = (model['e2 Components'])['Harmonic']
+    drude_components = (model['e2 Components'])['Drude']
+    Einf = (cody_components["Einf"])[0]
+    lorentz_oscillator = [
+        cody_lorentz_oscillator(
+            amplitude=(lorentz_components["Amp1"])[0],
+            oscillator_energy=(lorentz_components["En1"])[0],
+            broadening=(lorentz_components["Br1"])[0],
+            omega=w)
+        for w in omega]
+    rho = (drude_components["Resistivity"])[0]
+    mu = (drude_components["Mobility"])[0]
+    m_star = (drude_components["M*"])[0]
+    plasma_frequency = np.sqrt(
+        1.602E-19 / (rho * mu * 8.85E-12 * 9.109E-31 * m_star))
+    drude_oscillator = [
+        drudeoscillator(
+            scattering_time=(drude_components["Scattering"])[0],
+            plasma_frequency=plasma_frequency,
+            omega=w)
+        for w in omega]
+    epsilon_complex = [
+        Einf - lorentz - drude
+        for lorentz, drude
+        in zip(lorentz_oscillator, drude_oscillator)]
+    eps_real = [eps.real for eps in epsilon_complex]
+    eps_imag = [abs(eps.imag) for eps in epsilon_complex]
+    return eps_real, eps_imag
+
+
+def parameterised_materials(wavelength : list,
+                            model : dict) -> list:
+    """
+    """
+    frequency = [3E8 / (w * 1E-9) for w in wavelength]
+    omega = [2 * np.pi * f for f in frequency]
+    cody_components = model['e1 Components']
+    lorentz_components = (model['e2 Components'])['Cody-Lorentz']
+    Einf = (cody_components["Einf"])[0]
+    lorentz_oscillator = [
+        cody_lorentz_oscillator(
+            amplitude=(lorentz_components["Amp1"])[0],
+            oscillator_energy=(lorentz_components["Eo1"])[0],
+            broadening=(lorentz_components["Br1"])[0],
+            omega=w)
+        for w in omega]
+    Eg = (lorentz_components["Eg1"])[0]
+    plasma_frequency = (Eg * 1.6E-19 / const.hbar)
+    drude_oscillator = [
+        drudeoscillator(
+            scattering_time=0,
+            plasma_frequency=plasma_frequency,
+            omega=w)
+        for w in omega]
+    epsilon_complex = lorentz_oscillator
+    eps_real = [eps.real for eps in epsilon_complex]
+    eps_imag = [abs(eps.imag) for eps in epsilon_complex]
+    return eps_real, eps_imag
+
+
+def comp_RI(epsilon_real : list,
+            epsilon_imaginary : list) -> list:
+    """
+    Calculate the refractive index and extinction coefficient parameters from
+    the complex permittivity.
+
+    Parameters
+    ----------
+    epsilon_real, epsilon_imaginary: list
+        Real and imaginary components of the permittivity.
+
+    Returns
+    -------
+    n, k: list
+        Real and imaginary components of the complex refractive index.
+
+    See Also
+    --------
+    epsilon
+
+    Notes
+    -----
+    The real and imaginary components of the refractive index, n and k, can be
+    calculated from the complex permittivity according to standard equations.
+
+    Example
+    -------
+    None
+
+    """
+    n = [
+        np.sqrt((np.sqrt(eps_r ** 2 + eps_i ** 2) + eps_r) / 2)
+        for eps_r, eps_i
+        in zip(epsilon_real, epsilon_imaginary)]
+    k = [
+        np.sqrt((np.sqrt(eps_r ** 2 + eps_i ** 2) - eps_r) / 2)
+        for eps_r, eps_i
+        in zip(epsilon_real, epsilon_imaginary)]
+    return n, k

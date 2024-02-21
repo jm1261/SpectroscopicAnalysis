@@ -1,3 +1,4 @@
+import csv
 import json
 import numpy as np
 
@@ -216,3 +217,38 @@ def ellipsometer_in(file_path : str) -> list:
         usecols=(0, 1, 2, 3, 4),
         unpack=True)
     return col0, col1, col2, col3, col4
+
+
+def ellips_save(file_path : str,
+                data : object) -> None:
+    """
+    Write n, k, epsilon real, and epsilon imaginary to txt file.
+
+    Parameters
+    ----------
+    file_path: str
+        Path to out file.
+    data: object
+        Zipped data arrays. zip(n, k, eps_r, eps_i).
+
+    Returns
+    -------
+    None
+
+    See Also
+    --------
+    None
+
+    Notes
+    -----
+    None
+
+    Example
+    -------
+    None
+
+    """
+    with open(file_path, 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile, delimiter=',')
+        csv_writer.writerow(['n', 'k', 'eps_real', 'eps_imaginary'])
+        csv_writer.writerow(data)

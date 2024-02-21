@@ -309,22 +309,26 @@ def ellips_plot(x : list,
     plt.close(fig)
 
 
-def xy_plot(x : list,
-            y : list,
-            y_label : str,
-            x_axis_label : str,
-            y_axis_label : str,
-            title : str,
-            out_path : str,
-            plot_dict : dict) -> None:
+def twin_x_plot(x : list,
+                y1 : list,
+                y2: list,
+                y1_label : str,
+                y2_label : str,
+                x_axis_label : str,
+                y1_axis_label : str,
+                y2_axis_label : str,
+                title : str,
+                out_path : str,
+                plot_dict : dict) -> None:
     """
     Plot standard y vs x graph.
 
     Parameters
     ----------
-    x, y: list
+    x, y1, y2: list
         X- and Y- data.
-    y_label, x_axis_label, y_axis_label, title, out_path: string
+    y1_label, y2_label, x_axis_label, y1_axis_label, y2_axis_label, title,
+    out_path: string
         Data label, x and y axis labels, graph title, path to save as string.
     plot_dict: dictionary
         Plot settings dictionary, containing:
@@ -357,57 +361,85 @@ def xy_plot(x : list,
     None
 
     """
-    fig, ax = plt.subplots(
+    fig, ax1 = plt.subplots(
         nrows=1,
         ncols=1,
         figsize=[
             cm_to_inches(cm=plot_dict["width"]),
             cm_to_inches(cm=plot_dict["height"])],
         dpi=plot_dict["dpi"])
+    ax2 = ax1.twinx()
     if plot_dict["line"] == "True":
-        ax.plot(
+        line1 = ax1.plot(
             x,
-            y,
+            y1,
             'blue',
             lw=2,
-            label=y_label)
+            label=y1_label)
+        line2 = ax2.plot(
+            x,
+            y2,
+            'red',
+            lw=2,
+            label=y2_label)
     else:
-        ax.plot(
-        x,
-        y,
-        'blue',
-        markersize=4,
-        label=y_label)
+        line1 = ax1.plot(
+            x,
+            y1,
+            'blue',
+            markersize=4,
+            label=y1_label)
+        line2 = ax1.plot(
+            x,
+            y2,
+            'red',
+            markersize=4,
+            label=y2_label)
     if plot_dict["grid"] == "True":
         grid = True
     else:
         grid = False
-    ax.grid(
+    ax1.grid(
         visible=grid,
         alpha=0.5)
-    ax.legend(
+    lines = line1 + line2
+    labels = [line.get_label() for line in lines]
+    ax1.legend(
+        lines,
+        labels,
         frameon=True,
         loc=plot_dict["legend_loc"],
         ncol=plot_dict["legend_col"],
         prop={"size": plot_dict["legend_size"]})
-    ax.set_xlabel(
+    ax1.set_xlabel(
         x_axis_label,
         fontsize=plot_dict["axis_fontsize"],
         fontweight='bold')
-    ax.set_ylabel(
-        y_axis_label,
+    ax1.set_ylabel(
+        y1_axis_label,
         fontsize=plot_dict["axis_fontsize"],
         fontweight='bold')
-    ax.set_title(
+    ax2.set_ylabel(
+        y2_axis_label,
+        fontsize=plot_dict["axis_fontsize"],
+        fontweight='bold',
+        rotation=270,
+        labelpad=20)
+    ax1.set_title(
         title,
         fontsize=plot_dict["title_fontsize"],
         fontweight='bold')
-    ax.tick_params(
+    ax1.tick_params(
         axis='both',
         which='major',
         labelsize=plot_dict["label_size"])
-    ax.xaxis.set_minor_locator(AutoMinorLocator())
-    ax.yaxis.set_minor_locator(AutoMinorLocator())
+    ax2.tick_params(
+        axis='y',
+        which='major',
+        labelsize=plot_dict["label_size"])
+    ax1.xaxis.set_minor_locator(AutoMinorLocator())
+    ax1.yaxis.set_minor_locator(AutoMinorLocator())
+    ax2.yaxis.set_minor_locator(AutoMinorLocator())
     plt.savefig(
         out_path,
         bbox_inches='tight')
