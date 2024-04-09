@@ -448,94 +448,224 @@ def twin_x_plot(x : list,
     plt.close(fig)
 
 
-def spectrumplt(wavelength,
-                intensity,
-                out_path):
+def xy_plot(x : list,
+            y : list,
+            plot_dict : dict,
+            x_axis_label : str,
+            y_axis_label : str,
+            title : str,
+            out_path : str) -> None:
+    """
+    Function Details
+    ================
+    Plot single y array against single x array.
+
+    Parameters
+    ----------
+    x, y: list
+        Data arrays for x and y axis.
+    x_axis_label, y_axis_label, title, out_path: string
+        x and y axis labels, graph title, path to save.
+    plot_dict: dictionary
+        Plot settings dictionary, containing:
+            {
+                "width": plot width,\n
+                "height": plot height,\n
+                "dpi": dots per square inch,\n
+                "grid": True/False,\n
+                "legend_loc": legend location,\n
+                "legend_col": legend column number,\n
+                "legend_size": size of legend text,\n
+                "axis_fontsize": font size for axis labels,\n
+                "label_size": size for tick labels
+            }
+
+    Returns
+    -------
+    None.
+
+    See Also
+    --------
+    None.
+
+    Notes
+    -----
+    None.
+
+    Example
+    -------
+    None.
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Documentation updated. Added plot dictionary functionality.
+
+    """
     fig, ax = plt.subplots(
-        1,
-        figsize=[round(7.5 * 0.393701, 2), round(9 * 0.393701, 2)],
-        dpi=600)
-    ax.plot(
-        wavelength,
-        intensity,
-        'b',
-        lw=2,
-        label='Data')
+        nrows=1,
+        ncols=1,
+        figsize=[
+            cm_to_inches(cm=plot_dict["width"]),
+            cm_to_inches(cm=plot_dict["height"])],
+        dpi=plot_dict["dpi"])
+    if plot_dict["line"] == "True":
+        ax.plot(
+            x,
+            y,
+            'blue',
+            lw=2,
+            label='Data')
+    else:
+        ax.plot(
+            x,
+            y,
+            'blue',
+            markersize=4,
+            label='Data')
+    if plot_dict["grid"] == "True":
+        grid = True
+    else:
+        grid = False
+    ax.grid(
+        visible=grid,
+        alpha=0.5)
     ax.legend(
         frameon=True,
-        loc=0,
-        prop={'size': 10})
+        loc=plot_dict["legend_loc"],
+        ncol=plot_dict["legend_col"],
+        prop={'size': plot_dict["legend_size"]})
     ax.set_xlabel(
-        'Wavelength [nm]',
-        fontsize=15,
+        x_axis_label,
+        fontsize=plot_dict["axis_fontsize"],
         fontweight='bold')
     ax.set_ylabel(
-        'Intensity [au]',
-        fontsize=15,
+        y_axis_label,
+        fontsize=plot_dict["axis_fontsize"],
+        fontweight='bold')
+    ax.set_title(
+        title,
+        fontsize=plot_dict["title_fontsize"],
         fontweight='bold')
     ax.tick_params(
         axis='both',
         colors='black',
-        labelsize=10)
-    ax.set_ylim(0, 1)
-    plt.savefig(out_path, bbox_inches='tight')
+        labelsize=plot_dict["label_size"])
+    ax.xaxis.set_minor_locator(AutoMinorLocator())
+    ax.yaxis.set_minor_locator(AutoMinorLocator())
+    plt.savefig(
+        out_path,
+        bbox_inches='tight')
     fig.clf()
     plt.cla()
     plt.close(fig)
 
 
-def fanofitplot(wavelength,
-                intensity,
-                fano,
-                out_path,
-                peak_wavelength,
-                peak_error,
-                show=False):
-    '''
-    Plot wavelength, intensity, and fano peak fit on same axis.
-    Args:
-        wavelength: <array> wavelength array
-        intensity: <array> intensity array
-        fano: <array> fano fit intensity array
-        out_path: <string> path to save
-        peak_wavelength: <string> calculated peak wavelength
-        peak_error: <string> calculated peak wavelength error
-        show: <bool> if True, plot shows, always saves
-    Returns:
-        None
-    '''
+def fanofitplot(wavelength : list,
+                intensity : list,
+                fano : list,
+                out_path : str,
+                peak_wavelength : str,
+                peak_error : str,
+                plot_dict : dict) -> None:
+    """
+    Function Details
+    ================
+    Plot wavelength, intensity, and fano resonance on same axis.
+
+    Parameters
+    ----------
+    wavelength, intensity, fano: list
+        Wavelength, intensity, and fano function arrays.
+    out_path, peak_wavelength, peak_error: string
+        Path to save, peak wavelength and peak error as string for box.
+    plot_dict: dictionary
+        Plot settings dictionary, containing:
+            {
+                "width": plot width,\n
+                "height": plot height,\n
+                "dpi": dots per square inch,\n
+                "grid": True/False,\n
+                "legend_loc": legend location,\n
+                "legend_col": legend column number,\n
+                "legend_size": size of legend text,\n
+                "axis_fontsize": font size for axis labels,\n
+                "label_size": size for tick labels
+            }
+
+    Returns
+    -------
+    None.
+
+    See Also
+    --------
+    None.
+
+    Notes
+    -----
+    None.
+
+    Example
+    -------
+    None.
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Documentation update. Added plot dictionary functionality.
+
+    """
     fig, ax = plt.subplots(
-        1,
-        figsize=[round(7.5 * 0.393701, 2), round(9 * 0.393701, 2)],
-        dpi=600)
+        nrows=1,
+        ncols=1,
+        figsize=[
+            cm_to_inches(cm=plot_dict["width"]),
+            cm_to_inches(cm=plot_dict["height"])],
+        dpi=plot_dict["dpi"])
     ax.plot(
         wavelength,
         intensity,
-        'b',
+        'blue',
         lw=2,
         label='Data')
     ax.plot(
         wavelength,
         fano,
-        'r',
+        'red',
         lw=2,
         label='Fano Fit')
+    if plot_dict["grid"] == "True":
+        grid = True
+    else:
+        grid = False
+    ax.grid(
+        visible=grid,
+        alpha=0.5)
     ax.legend(
         frameon=True,
-        loc=0,
-        prop={'size': 10})
+        loc=plot_dict["legend_loc"],
+        ncol=plot_dict["legend_col"],
+        prop={'size': plot_dict["legend_size"]})
     ax.set_xlabel(
         'Wavelength [nm]',
-        fontsize=15,
+        fontsize=plot_dict["axis_fontsize"],
         fontweight='bold')
     ax.set_ylabel(
         'Intensity [au]',
-        fontsize=15,
+        fontsize=plot_dict["axis_fontsize"],
         fontweight='bold')
     ax.tick_params(
         axis='both',
         colors='black',
-        labelsize=10)
+        labelsize=plot_dict["label_size"])
+    ax.xaxis.set_minor_locator(AutoMinorLocator())
+    ax.yaxis.set_minor_locator(AutoMinorLocator())
     text_string = (
         f'Peak = ({round(peak_wavelength, 2)} +/- {round(peak_error, 2)})nm')
     props = dict(
@@ -549,8 +679,6 @@ def fanofitplot(wavelength,
         transform=ax.transAxes,
         verticalalignment='top',
         bbox=props)
-    if show:
-        plt.show()
     plt.savefig(out_path, bbox_inches='tight')
     fig.clf()
     plt.cla()

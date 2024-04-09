@@ -38,14 +38,42 @@ def load_json(file_path : str) -> dict:
         return json.load(file)
 
 
-def read_GMR_file(file_path):
+def read_GMR_file(file_path : str) -> tuple[list, list]:
     '''
-    Load txt output from GMRX spectrometer. Return wavelength in nm.
-    Args:
-        file_path: <string> path to file
-    Returns:
-        wavelength: <array> wavelength array
-        intensity: <array> intensity array
+    Function Details
+    ================
+    Load txt output from Thorlabs spectrometer. Return wavelength in nm.
+
+    Parameters
+    ----------
+    file_path: string
+        Path to file.
+
+    Returns
+    -------
+    wavelength, intensity: list
+        Wavelength array, intensity array.
+
+    See Also
+    --------
+    numpy genfromtxt
+
+    Notes
+    -----
+    Returns wavelength in nm.
+
+    Example
+    -------
+    None
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    08/04/2024
+    ----------
+    Updated documentation.
+
     '''
     try:
         wavelength, intensity = np.genfromtxt(

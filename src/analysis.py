@@ -6,28 +6,87 @@ from src.plotting import fanofitplot
 from src.userinput import trimindices
 
 
-def timecorrected_intensity(raw_intensity,
-                            integration_time):
-    '''
+def timecorrected_intensity(raw_intensity : list,
+                            integration_time : float) -> list:
+    """
+    Function Details
+    ================
     Correct raw intensity by multiplying by integration time.
-    Args:
-        raw_intensity: <array> raw spectrum intensity
-        integration_time: <float> integration time in seconds
-    Return:
-        intensity: <array> time corrected intensity array
-    '''
+
+    Parameters
+    ----------
+    raw_intensity: list
+        Raw spectrum intensity.
+    integration_time: float
+        Integration time in seconds.
+
+    Returns
+    -------
+    intensity: list
+        Time corrected intensity array.
+
+    See Also
+    --------
+    None.
+
+    Notes
+    -----
+    None.
+
+    Example
+    -------
+    None.
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Documentation update.
+
+    """
     intensity = [raw / integration_time for raw in raw_intensity]
     return intensity
 
 
-def normalise_intensity(raw_intensity):
-    '''
+def normalise_intensity(raw_intensity : list) -> list:
+    """
+    Function Details
+    ================
     Normalise intensity to maximum value in the scan intensity.
-    Args:
-        raw_intensity: <array> raw scan intensity
-    Returns:
-        normalised_intensity: <array> normalised intensity array
-    '''
+
+    Parameters
+    ----------
+    raw_intensity: list
+        Raw scan intensity.
+
+    Returns
+    -------
+    normalised_intensity: list
+        Normalised intensity array.
+
+    See Also
+    --------
+    None.
+
+    Notes
+    -----
+    Normalise intensity with respect to the maximum intensity value in the list.
+
+    Example
+    -------
+    None
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Documentation update.
+
+    """
     max_intensity = max(raw_intensity)
     normalised_intensity = [
         intensity / max_intensity
@@ -35,21 +94,48 @@ def normalise_intensity(raw_intensity):
     return normalised_intensity
 
 
-def bg_normal_intensity(intensity,
-                        background_intensity,
-                        integration_time,
-                        background_integration_time):
-    '''
+def bg_normal_intensity(intensity : list,
+                        background_intensity : list,
+                        integration_time : float,
+                        background_integration_time : float) -> list:
+    """
+    Function Details
+    ================
     Background normalise spectrum to light source.
-    Args:
-        intensity: <array> spectrum intensity
-        background_intensity: <array> background spectrum intensity
-        integration_time: <float> spectrum integration time
-        background_integration_time: <float> background spectrum integration
-                                    time
-    Returns:
-        normal_intensity: <array> background normalised intensity
-    '''
+
+    Parameters
+    ----------
+    intensity, background_intensity: list
+        Spectrum intensity, background spectrum intensity.
+    integration_time, background_integration_time: float
+        Spectrum integration time, background spectrum integration time.
+
+    Returns
+    -------
+    normal_intensity: list
+        Background normalised intensity.
+
+    See Also
+    --------
+    None.
+
+    Notes
+    -----
+    None.
+
+    Example
+    -------
+    None
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Documentation update.
+
+    """
     integration_factor = integration_time / background_integration_time
     normal_intensity = (
         intensity / (integration_factor * background_intensity))
@@ -76,28 +162,73 @@ def fano_resonance(x, x0, gamma, q, amplitude, damping):
     return y
 
 
-def get_fano_parameters(wavelength,
-                        intensity,
-                        sample_name,
-                        plot_figure,
-                        out_path=False):
-    '''
-    Use scipy optimise and fano_resonance to iterate and find the peak in
-    intensity and the corresponding wavelength and error value.
-    Args:
-        wavelength: <array> wavelength array in nm
-        intensity: <array> intensity array
-        sample_name: <string> secondary sample identifier string
-        plot_figure: <string> if "True" will plot normalised spectrum with fano
-        out_path: <string> path to save, False by default
-    Returns:
-        peak_wavelength: <dict> dictionary containing:
-            popt: <array> fano fit parameters:
-                peak, gamma, q, amplitude, damping
-            pcov: <array> fano fit errors
-                peak, gamma, q, amplitude, damping
-    '''
+def get_fano_parameters(wavelength : list,
+                        intensity : list,
+                        out_path : str,
+                        plot_dict : dict) -> dict:
+    """
+    Function Details
+    ================
+    Get the fano resonance parameters using scipy optimize curve fit.
+
+    Parameters
+    ----------
+    wavelength, intensity: list
+        Wavelength array and intensity array.
+    out_path: string
+        Path to save.
+    plot_dict: dictionary
+        Plot settings dictionary, containing:
+            {
+                "width": plot width,\n
+                "height": plot height,\n
+                "dpi": dots per square inch,\n
+                "grid": True/False,\n
+                "legend_loc": legend location,\n
+                "legend_col": legend column number,\n
+                "legend_size": size of legend text,\n
+                "axis_fontsize": font size for axis labels,\n
+                "label_size": size for tick labels
+            }
+
+    Returns
+    -------
+    dictionary: dict
+    >>> results
+    {
+        "popt": [peak, gamma, q, amplitude, damping],
+        "pcov": [error, error, error, error, error]
+    }
+
+    See Also
+    --------
+    scipy optimize curve_fit
+    fanofitplot
+
+    Notes
+    -----
+    Function will default out to [0, 0, 0, 0, 0] if curve_fit hits a runtime
+    error.
+
+    Example
+    -------
+    None
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Documentation update. Removed sample name and out_path is now a compulsory
+    argument.
+
+    """
+
+    ''' Set Up Initial Guesses '''
     initial_guesses = [wavelength[np.argmax(intensity)], 10, 5, 0.6, 1]
+
+    ''' Scipy Optimize '''
     try:
         popt, pcov = opt.curve_fit(
             fano_resonance,
@@ -109,99 +240,185 @@ def get_fano_parameters(wavelength,
         print('\nRun Time Error \nNo Peak Found')
         popt = [0, 0, 0, 0, 0]
         errors = [0, 0, 0, 0, 0]
+
+    ''' Find Peak Wavelength and Error '''
     peak_wavelength = popt[0]
     peak_wavelength_error = errors[0]
-    if plot_figure == 'True':
-        fanofitplot(
-            wavelength=wavelength,
-            intensity=intensity,
-            fano=[
-                fano_resonance(
-                    x=wav,
-                    x0=popt[0],
-                    gamma=popt[1],
-                    q=popt[2],
-                    amplitude=popt[3],
-                    damping=popt[4])
-                for wav in wavelength],
-            peak_wavelength=peak_wavelength,
-            peak_error=peak_wavelength_error,
-            out_path=out_path)
+
+    ''' Plot Figure '''
+    fanofitplot(
+        wavelength=wavelength,
+        intensity=intensity,
+        fano=[
+            fano_resonance(
+                x=wav,
+                x0=popt[0],
+                gamma=popt[1],
+                q=popt[2],
+                amplitude=popt[3],
+                damping=popt[4])
+            for wav in wavelength],
+        out_path=out_path,
+        peak_wavelength=peak_wavelength,
+        peak_error=peak_wavelength_error,
+        plot_dict=plot_dict)
+
     return {
-        f'{sample_name} Fano Fit Parameters': [
-            'Peak', 'Gamma', 'q', 'Ampltidude', 'Damping'],
-        f'{sample_name} Fano Fit': [value for value in popt],
-        f'{sample_name} Fano Errors': [value for value in errors],
-        f'{sample_name} Wavelength': [w for w in wavelength],
-        f'{sample_name} Intensity': [i for i in intensity]}
+        "Spectrum Fano Fit": [value for value in popt],
+        "Spectrum Fano Errors": [value for value in errors]}
 
 
-def get_peak_wavelength(fano_parameters,
-                        sample_name):
-    '''
-    Get peak wavelength from fano fit parameters.
-    Args:
-        fano_parameters: <dict> dictionary containing Fano Fit and Fano Fit
-                            Errors
-        sample_name: <string> secondary sample identifier string
-    Returns:
-        peak_wavelength: <dict>
-            Peak Wavelength (nm)
-            Peak Error (nm)
-    '''
-    peak_wavelength = (fano_parameters[f'{sample_name} Fano Fit'])[0]
-    peak_error = (fano_parameters[f'{sample_name} Fano Errors'])[1]
+def get_peak_wavelength(fano_parameters : dict) -> dict:
+    """
+    Function Details
+    ================
+    Get peak wavelength from the fano fit parameters.
+
+    Parameters
+    ----------
+    fano_parameters: dict
+        Fano fit and fano fit error values.
+
+    Returns
+    -------
+    dictionary: dict
+        peak wavelength and peak error values.
+
+    See Also
+    --------
+    None.
+
+    Notes
+    -----
+    None.
+
+    Example
+    -------
+    None.
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Documentation update. Removed sample name from the function.
+
+    """
+    peak_wavelength = (fano_parameters["Spectrum Fano Fit"])[0]
+    peak_error = (fano_parameters["Spectrum Fano Errors"])[1]
     return {
-        f'{sample_name} Peak Wavelength': peak_wavelength,
-        f'{sample_name} Peak Error': peak_error}
+        "Spectrum Peak Wavelength": peak_wavelength,
+        "Spectrum Peak Error": peak_error}
 
 
-def calc_peakwavelength(wavelength,
-                        normalised_intensity,
-                        sample_details,
-                        plot_figure,
-                        out_path=False):
-    '''
-    Calculate peak wavelength of normalised intensity from spectrometer scan.
+def calculate_fano_peak(wavelength : list,
+                        normalised_intensity : list,
+                        sample_details : dict,
+                        out_path : str,
+                        plot_dict : dict) -> dict:
+    """
+    Function Details
+    ================
+    Calculate fano resonance of normalised intensity.
+
     Trim file to region of interest and use fano-peak resonance function to find
-    peak wavelength.
-    Args:
-        wavelength: <array> wavelength array
-        normalised_intensity: <array> normalised intensity array
-        sample_details: <dict> sample details dictionary
-        plot_figure: <string> if "True" plots the peak figure
-        out_path: <string> path to save file, default False
-    Returns:
-        results_dictionary: <dict>
-            Region Trim Index: <array> min, max indices
-            popt: <array> fano fit parameters:
-                peak, gamma, q, amplitude, damping
-            pcov: <array> fano fit errors
-                peak, gamma, q, amplitude, damping
-            Peak Wavelength (nm)
-            Peak Error (nm)
-    '''
-    parent = sample_details['Parent Directory']
-    region_string = sample_details[f'{parent} Secondary String']
+    the peak wavelength.
+
+    Parameters
+    ----------
+    wavelength, normalised_intensity: list
+        Wavelength array and normalised intensity array.
+    samples_details: dictionary
+        Sample details dictionary.
+    out_path: string
+        Path to save.
+    plot_dict: dictionary
+        Plot settings dictionary, containing:
+            {
+                "width": plot width,\n
+                "height": plot height,\n
+                "dpi": dots per square inch,\n
+                "grid": True/False,\n
+                "legend_loc": legend location,\n
+                "legend_col": legend column number,\n
+                "legend_size": size of legend text,\n
+                "axis_fontsize": font size for axis labels,\n
+                "label_size": size for tick labels
+            }
+
+    Returns
+    -------
+    results_dictionary: dict
+    >>> results_dictionary
+    {
+        "Spectrum Trim Index": [
+            min_index,
+            max_index
+        ],
+        "popt": [
+            peak,
+            gamma,
+            q,
+            amplitude,
+            damping],
+        "pcov": [
+            peak_error,
+            gamma_error,
+            q_error,
+            amplitude_error,
+            damping_error
+        ],
+        "Peak Wavelength": wavelength,
+        "Peak Error": wavelength_error
+    }
+
+    See Also
+    --------
+    trimindices
+    get_fano_parameters
+    get_peak_wavelength
+
+    Notes
+    -----
+    None.
+
+    Example
+    -------
+    None.
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Documentation update. Remove plot figure, always plots.
+
+    """
+
+    ''' Trm Region of Interest '''
     trim_indices = trimindices(
         x_array=wavelength,
         y_array=normalised_intensity,
-        file_name=sample_details[f'{parent} File Name'],
-        region=region_string,
+        file_name=sample_details["Spectrum File Name"],
         y_limit=(0, 1))
+
+    ''' Fit Fano '''
     fano_parameters = get_fano_parameters(
         wavelength=wavelength[
-            (trim_indices[f'{region_string} Trim Index'])[0]:
-            (trim_indices[f'{region_string} Trim Index'])[1]],
+            (trim_indices["Spectrum Trim Index"])[0]:
+            (trim_indices["Spectrum Trim Index"])[1]],
         intensity=normalised_intensity[
-            (trim_indices[f'{region_string} Trim Index'])[0]:
-            (trim_indices[f'{region_string} Trim Index'])[1]],
-        sample_name=sample_details[f'{parent} Secondary String'],
-        plot_figure=plot_figure,
-        out_path=out_path)
-    peak_wavelength = get_peak_wavelength(
-        fano_parameters=fano_parameters,
-        sample_name=sample_details[f'{parent} Secondary String'])
+            (trim_indices["Spectrum Trim Index"])[0]:
+            (trim_indices["Spectrum Trim Index"])[1]],
+        out_path=out_path,
+        plot_dict=plot_dict)
+
+    ''' Get Peak Wavelength '''
+    peak_wavelength = get_peak_wavelength(fano_parameters=fano_parameters)
+
+    ''' Output Results '''
     results_dictionary = dict(
         trim_indices,
         **fano_parameters,
