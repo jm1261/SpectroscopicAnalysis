@@ -6,6 +6,7 @@ import src.plotting as plot
 
 from pathlib import Path
 
+''' Broken since the removal of src.chris, fix later. '''
 
 def batch_calculate_peak_wavelength(parent_directory,
                                     batch_name,

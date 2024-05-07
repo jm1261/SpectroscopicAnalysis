@@ -82,22 +82,53 @@ def get_files_paths(directory_path,
     return file_paths
 
 
-def get_parent_directory(file_path):
-    '''
+def get_parent_directory(file_path : str) -> str:
+    """
+    Function Details
+    ================
     Find parent directory name of target file.
-    Args:
-        file_path: <string> path to file
-    Returns:
-        parent_directory: <string> parent directory name (not path)
-    '''
+
+    Parameters
+    ----------
+    file_path: string
+        Path to file.
+
+    Returns
+    -------
+    parent_directory: string
+        Parent directory name (not path).
+
+    See Also
+    --------
+    os.path.dirname
+
+    Notes
+    -----
+    None.
+
+    Example
+    -------
+    None
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Updated documentation.
+
+    """
     dirpath = os.path.dirname(file_path)
     dirpathsplit = dirpath.split('\\')
     parent_directory = dirpathsplit[-1]
     return parent_directory
 
 
-def get_filename(file_path):
+def get_filename(file_path : str) -> str:
     """
+    Function Details
+    ================
     Get the file name of a file without the directory path or file extension.
 
     Split file path and remove directory path and file extensions.
@@ -127,20 +158,59 @@ def get_filename(file_path):
     >>> file_name
     "File1"
 
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Documentation update.
+
     """
     return os.path.splitext(os.path.basename(file_path))[0]
 
 
-def get_integration_time(file_name):
-    '''
-    Pull integration time from file name string. Returns an integration time of
-    1s without file name containing integration time. Can cope with _int100 or
-    _100ms integration times in file name string.
-    Args:
-        file_name: <string> file name string without extensions
-    Returns:
-        integration_time: <float> integration time in s
-    '''
+def get_integration_time(file_name : str) -> float:
+    """
+    Function Details
+    ================
+    Pull integration time from file name string.
+
+    Return integration time if present in the filename.
+
+    Parameters
+    ----------
+    file_name: string
+        File name without extension.
+
+    Returns
+    -------
+    integration_time: float
+        Integration time as a float.
+
+    See Also
+    --------
+    None.
+
+    Notes
+    -----
+    If no integration time present in the filename, function will return 1 s. It
+    can accept wither an "_int100" or "_100ms" integration time within the file
+    name.
+
+    Example
+    -------
+    None.
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Update documentation.
+
+    """
     file_split = file_name.split('_')
     int_time_string = [string for string in file_split if 'int' in string]
     ms_time_string = [string for string in file_split if 'ms' in string]
@@ -155,14 +225,43 @@ def get_integration_time(file_name):
     return integration_time
 
 
-def get_polarisation(file_name):
-    '''
+def get_polarisation(file_name : str) -> str:
+    """
+    Function Details
+    ================
     Find polarisation from file name string.
-    Args:
-        file_name: <string> file name string
-    Returns:
-        polarisation: <string> polarisation string (TE/TM)
-    '''
+
+    Parameters
+    ----------
+    file_name: string
+        File name without extension.
+
+    Returns
+    -------
+    polarisation: string
+        Polarisation = 'TE' or 'TM'.
+
+    See Also
+    --------
+    None.
+
+    Notes
+    -----
+    None.
+
+    Example
+    -------
+    None.
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Documentation update.
+
+    """
     file_split = file_name.split('_')
     TE_string = [string for string in file_split if 'TE' in string]
     TM_string = [string for string in file_split if 'TM' in string]
@@ -174,14 +273,71 @@ def get_polarisation(file_name):
     return polarisation
 
 
-def spectrum_sample_information(file_path):
-    '''
+def spectrum_sample_information(file_path : str) -> dict:
+    """
+    Function Details
+    ================
     Pull sample parameters from file name string for various processes.
-    Args:
-        file_path: <string> path to file
-    Returns:
-        sample_parameters: <dict>
-    '''
+
+    Parameters
+    ----------
+    file_path: string
+        Path to file.
+
+    Returns
+    -------
+    sample_parameters: dict
+    >>> {
+            'Parent Directory': 'Spectrum/Background',
+            'File Name': 'file name',
+            'File Path': '/path/to/file',
+            'Primary String': 'First Split',
+            'Secondary String': 'Second Split',
+            'Integration time': 'Integration Time',
+            'Polarisation': 'Polarisation String'
+        }
+
+    See Also
+    --------
+    get_parent_directory
+    get_filename
+    get_polarisation
+    get_integration_time
+
+    Notes
+    -----
+    Parent directory must be named "Spectrum" or "Background" for this function
+    to work. This is to distinguish between other software. File names must
+    be separated by "_". File names should contain the integration time and the
+    polarisation of the incident light either as "int80" or "80ms" for an 80ms
+    integration time, or "pol90" or "TE" for a TE polarisation, for example. The
+    parent directory is given as a string in the dictionary keys, as detailed in
+    the example below.
+
+    Example
+    -------
+    >>> file_path = '/path/to/Spectrum/A1_Grating_TE_80ms.txt'
+    >>> sample_parameters = sample_information(file_path=file_path)
+    >>> print(sample_parameters)
+    {
+        'Parent Directory': 'Spectrum',
+        'Spectrum File Name': 'A1_Grating_TE_80ms',
+        'Spectrum File Path': '/path/to/Spectrum/A1_Grating_TE_80ms.txt',
+        'Spectrum Primary String': 'A1',
+        'Spectrum Secondary String': 'Grating_TE',
+        'Spectrum Integration Time': 0.08,
+        'Spectrum Polarisation': 'TE'
+    }
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Documentation updated.
+
+    """
     parent_directory = get_parent_directory(file_path=file_path)
     file_name = get_filename(file_path=file_path)
     file_split = file_name.split('_')
@@ -197,14 +353,73 @@ def spectrum_sample_information(file_path):
         f'{parent_directory} Polarisation': polarise}
 
 
-def sample_information(file_path):
-    '''
-    Pull sample parameters based on which type of file is being analysed.
-    Args:
-        file_path: <string> path to file
-    Returns:
-        sample_parameters: <dict>
-    '''
+def sample_information(file_path : str) -> dict:
+    """
+    Function Details
+    ================
+    Pull sample information and parameters based on the type of file being
+    processed/analysed.
+
+    Parameters
+    ----------
+    file_path: string
+        Path to target file.
+
+    Returns
+    -------
+    sample_parameters: dict
+        If parent directory is named spectrum/background:
+    >>> {
+            'Parent Directory': 'Spectrum/Background',
+            'File Name': 'file name',
+            'File Path': '/path/to/file',
+            'Primary String': 'First Split',
+            'Secondary String': 'Second Split',
+            'Integration time': 'Integration Time',
+            'Polarisation': 'Polarisation String'
+        }
+        If parent directory is not named spectrum/background:
+    >>> {}
+
+    See Also
+    --------
+    spectrum_sample_information
+    get_parent_directory
+
+    Notes
+    -----
+    Parent directory must be named "Spectrum" or "Background" for this function
+    to work. This is to distinguish between other software. File names must
+    be separated by "_". File names should contain the integration time and the
+    polarisation of the incident light either as "int80" or "80ms" for an 80ms
+    integration time, or "pol90" or "TE" for a TE polarisation, for example. The
+    parent directory is given as a string in the dictionary keys, as detailed in
+    the example below.
+
+    Example
+    -------
+    >>> file_path = '/path/to/Spectrum/A1_Grating_TE_80ms.txt'
+    >>> sample_parameters = sample_information(file_path=file_path)
+    >>> print(sample_parameters)
+    {
+        'Parent Directory': 'Spectrum',
+        'Spectrum File Name': 'A1_Grating_TE_80ms',
+        'Spectrum File Path': '/path/to/Spectrum/A1_Grating_TE_80ms.txt',
+        'Spectrum Primary String': 'A1',
+        'Spectrum Secondary String': 'Grating_TE',
+        'Spectrum Integration Time': 0.08,
+        'Spectrum Polarisation': 'TE'
+    }
+
+    ----------------------------------------------------------------------------
+    Update History
+    ==============
+
+    09/04/2024
+    ----------
+    Update to documentation.
+
+    """
     parent_directory = get_parent_directory(file_path=file_path)
     if parent_directory == 'Spectrum' or parent_directory == 'Background':
         sample_parameters = spectrum_sample_information(
