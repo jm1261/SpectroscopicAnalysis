@@ -11,12 +11,12 @@
   "title_fontsize": 15,
   "label_size": 10,
   "batch_name": "Test1_ALD",
-  "data_path": "C:\\Users\\joshs\\OneDrive - University of York\\Post_Doc\\Filmetrics",
+  "data_path": "K:\\Josh\\Post_Doc\\Filmetrics",
   "data_files": [
     "Test1_ALD.fitnk"
   ],
   "out_paths": [
-    "C:\\Users\\joshs\\OneDrive - University of York\\Post_Doc\\Filmetrics\\Test1_ALD_nk.png",
-    "C:\\Users\\joshs\\OneDrive - University of York\\Post_Doc\\Filmetrics\\Test1_ALD_epsilon.png"
+    "K:\\Josh\\Post_Doc\\Filmetrics\\Test1_ALD_nk.png",
+    "K:\\Josh\\Post_Doc\\Filmetrics\\Test1_ALD_epsilon.png"
   ]
 }

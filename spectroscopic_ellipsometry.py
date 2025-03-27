@@ -149,7 +149,7 @@ if __name__ == '__main__':
     root = Path().absolute()
     vase_dict = io.load_json(
         file_path=Path(
-            f'{root}/../SpectroscopicAnalysis/vase_dictionary.json'))
+            f'{root}/SpectroscopicAnalysis/vase_dictionary.json'))
     graph_paths = {"out_paths": {}}
     for file in vase_dict["data_files"]:
         file_path = Path(f'{vase_dict["data_path"]}/{file}')
@@ -167,5 +167,5 @@ if __name__ == '__main__':
         **graph_paths)
     io.save_json_dicts(
         out_path=Path(
-            f'{root}/../SpectroscopicAnalysis/vase_dictionary.json'),
+            f'{root}/SpectroscopicAnalysis/vase_dictionary.json'),
         dictionary=out_dict)
